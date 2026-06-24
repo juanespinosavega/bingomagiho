@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🎱 Bingo Mágico - Sistema Profesional</title>
+    <style>
+        :root {
+            --bola: 45px;
+            --font-bola: 15px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .contenedor {
+            width: 100%;
+            max-width: 950px;
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .subtitulo {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        /* SISTEMA DE ENTRADA POR CÓDIGO */
+        .entrada-codigo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .entrada-codigo label {
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+        
+        .input-codigo {
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 3px solid #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            width: 150px;
+            text-transform: uppercase;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-codigo:focus {
+            border-color: #ff4500;
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+            transform: scale(1.05);
+        }
+        
+        .btn-marcar {
+            padding: 12px 25px;
+            border-radius: 30px;
+            border: none;
+            background: #27ae60;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 0 #1e8449;
+        }
+        
+        .btn-marcar:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+        
+        .btn-marcar:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+        
+        .sugerencias {
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 5px;
+            width: 100%;
+        }
+        
+        /* MODOS */
+        .modos {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-modo {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .btn-modo.admin {
+            background: #e74c3c;
+        }
+        
+        .btn-modo.jugador {
+            background: #3498db;
+        }
+        
+        .btn-modo.activo {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* TECLADO NUMÉRICO VIRTUAL */
+        .teclado-virtual {
+            display: none;
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .teclado-virtual.visible {
+            display: block;
+        }
+        
+        .fila-teclado {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+        
+        .tecla {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            background: white;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tecla:hover {
+            background: #3498db;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .tecla:active {
+            background: #2980b9;
+            transform: scale(0.95);
+        }
+        
+        .tecla.letra-tecla {
+            background: #f39c12;
+            color: white;
+            font-size: 16px;
+            width: 60px;
+        }
+        
+        .tecla.borrar {
+            background: #e74c3c;
+            color: white;
+            width: 80px;
+            font-size: 14px;
+        }
+        
+        .tecla.enter {
+            background: #27ae60;
+            color: white;
+            width: 80px;
+            font-size: 14px;
+        }
+        
+        /* BANNER */
+        .banner {
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            background-size: 200% 200%;
+            animation: gradiente 3s ease infinite;
+            color: #1a1a2e;
+            padding: 12px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            cursor: pointer;
+            border: 3px solid white;
+        }
+        
+        @keyframes gradiente {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* PREMIO */
+        .premio {
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            color: white;
+            padding: 12px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border: 3px dashed #ffd700;
+        }
+        
+        /* INFO */
+        .info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .reloj {
+            background: #2c3e50;
+            color: #f1c40f;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        
+        .ultimo-numero {
+            background: #ffd700;
+            border: 5px solid #ff4500;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: #8b0000;
+            animation: latido 1s infinite;
+        }
+        
+        @keyframes latido {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .contador {
+            background: #8e44ad;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .voz-control {
+            cursor: pointer;
+            padding: 8px 15px;
+            background: #ecf0f1;
+            border-radius: 20px;
+            font-size: 14px;
+            user-select: none;
+        }
+        
+        /* GRID */
+        .grid-bingo {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .columna {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 10px 3px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .letra-titulo {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+        }
+        
+        .B .letra-titulo { background: #2196F3; }
+        .I .letra-titulo { background: #FF5722; }
+        .N .letra-titulo { background: #4CAF50; }
+        .G .letra-titulo { background: #FFC107; color: #333; }
+        .O .letra-titulo { background: #9C27B0; }
+        
+        .bola {
+            width: var(--bola);
+            height: var(--bola);
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 40%, #fff4e0, #f0c060);
+            border: 3px solid #8b4513;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: var(--font-bola);
+            color: #3e2723;
+            cursor: pointer;
+            margin: 3px;
+            transition: all 0.2s;
+            box-shadow: 0 3px 0 #6d4c41;
+            user-select: none;
+        }
+        
+        .bola:hover {
+            transform: scale(1.1);
+        }
+        
+        .bola:active {
+            transform: scale(0.9);
+            box-shadow: 0 1px 0 #6d4c41;
+        }
+        
+        .bola.marcada {
+            background: radial-gradient(circle at 40% 40%, #95a5a6, #5d6d7e) !important;
+            border-color: #2c3e50 !important;
+            color: white !important;
+            text-decoration: line-through 3px #e74c3c;
+            box-shadow: 0 2px 0 #2c3e50 !important;
+            opacity: 0.7;
+            cursor: default;
+            pointer-events: none;
+        }
+        
+        .bola.bloqueada {
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+        
+        .bola.resaltada {
+            animation: resaltar 0.5s ease;
+            border-color: #ff4500 !important;
+            box-shadow: 0 0 20px rgba(255,69,0,0.5) !important;
+        }
+        
+        @keyframes resaltar {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); background: #ffd700 !important; }
+        }
+        
+        /* BOTONES */
+        .acciones {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            color: white;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+        
+        .btn-peligro { background: #e74c3c; }
+        .btn-advertencia { background: #f39c12; }
+        .btn-info { background: #3498db; }
+        .btn-exito { background: #27ae60; }
+        .btn-purpura { background: #8e44ad; }
+        
+        /* PESTAÑAS */
+        .pestanas {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #ddd;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 15px 15px 0 0;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+        
+        .tab-btn.activo {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .panel {
+            display: none;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px;
+            text-align: center;
+        }
+        
+        .panel.activo {
+            display: block;
+        }
+        
+        .resultado-tombola {
+            font-size: 60px;
+            font-weight: 900;
+            color: #f39c12;
+            margin: 15px 0;
+        }
+        
+        .historial {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .badge-tombola {
+            background: #f39c12;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            :root {
+                --bola: 32px;
+                --font-bola: 10px;
+            }
+            
+            .contenedor {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .banner {
+                font-size: 14px;
+            }
+            
+            .premio {
+                font-size: 16px;
+            }
+            
+            .ultimo-numero {
+                width: 60px;
+                height: 60px;
+                font-size: 22px;
+            }
+            
+            .letra-titulo {
+                width: 32px;
+                height: 32px;
+                font-size: 18px;
+            }
+            
+            .input-codigo {
+                width: 120px;
+                font-size: 16px;
+            }
+            
+            .tecla {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h1>🎱 BINGO MÁGICO 🎱</h1>
+        <p class="subtitulo">Sistema Profesional para Dictar Bingo</p>
+        
+        <!-- SISTEMA DE ENTRADA POR CÓDIGO -->
+        <div class="entrada-codigo" id="entradaCodigo">
+            <label>🎯 Ingresa código:</label>
+            <input type="text" 
+                   class="input-codigo" 
+                   id="inputCodigo" 
+                   placeholder="Ej: B5"
+                   maxlength="3"
+                   autocomplete="off">
+            <button class="btn-marcar" onclick="marcarPorCodigo()">
+                ✅ MARCAR
+            </button>
+            <button class="btn btn-purpura" onclick="toggleTeclado()" style="font-size:12px; padding:8px 15px;">
+                ⌨️ TECLADO
+            </button>
+            <div class="sugerencias">
+                💡 Escribe letra+número (B5, I22, N45, G60, O75) y presiona ENTER o clic en MARCAR
+            </div>
+        </div>
+        
+        <!-- TECLADO VIRTUAL -->
+        <div class="teclado-virtual" id="tecladoVirtual">
+            <div class="fila-teclado">
+                <button class="tecla letra-tecla" onclick="agregarLetra('B')">B</button>
+                <button class="tecla letra-tecla" onclick="agregarLetra('I')">I</button>
+                <button class="tecla letra-tecla" onclick="agregarLetra('N')">N</button>
+                <button class="tecla letra-tecla" onclick="agregarLetra('G')">G</button>
+                <button class="tecla letra-tecla" onclick="agregarLetra('O')">O</button>
+            </div>
+            <div class="fila-teclado">
+                <button class="tecla" onclick="agregarNumero('1')">1</button>
+                <button class="tecla" onclick="agregarNumero('2')">2</button>
+                <button class="tecla" onclick="agregarNumero('3')">3</button>
+                <button class="tecla" onclick="agregarNumero('4')">4</button>
+                <button class="tecla" onclick="agregarNumero('5')">5</button>
+                <button class="tecla" onclick="agregarNumero('6')">6</button>
+                <button class="tecla" onclick="agregarNumero('7')">7</button>
+            </div>
+            <div class="fila-teclado">
+                <button class="tecla" onclick="agregarNumero('8')">8</button>
+                <button class="tecla" onclick="agregarNumero('9')">9</button>
+                <button class="tecla" onclick="agregarNumero('0')">0</button>
+                <button class="tecla borrar" onclick="borrarTecla()">⌫</button>
+                <button class="tecla enter" onclick="marcarPorCodigo()">ENTER</button>
+            </div>
+        </div>
+        
+        <!-- MODOS -->
+        <div class="modos">
+            <button class="btn-modo admin activo" id="btnAdmin" onclick="cambiarModo('admin')">
+                👑 ADMINISTRADOR
+            </button>
+            <button class="btn-modo jugador" id="btnJugador" onclick="cambiarModo('jugador')">
+                👁️ JUGADOR
+            </button>
+        </div>
+        
+        <!-- BANNER -->
+        <div class="banner" id="banner" onclick="cambiarBanner()">
+            🎯 ¡Bienvenidos al Bingo! 🎯
+        </div>
+        
+        <!-- PREMIO -->
+        <div class="premio" id="premio">
+            🎁 Gran Premio Sorpresa 🎁
+        </div>
+        
+        <!-- INFO -->
+        <div class="info">
+            <div class="reloj" id="reloj">00:00:00</div>
+            <div class="ultimo-numero" id="ultimoLlamado">🎤</div>
+            <div class="contador" id="contador">
+                ⚡ Marcados: <span id="numMarcados">0</span>/75
+            </div>
+            <div class="voz-control" id="controlVoz" onclick="toggleVoz()">
+                🔊 Voz ON
+            </div>
+        </div>
+        
+        <!-- GRID -->
+        <div class="grid-bingo" id="gridBingo"></div>
+        
+        <!-- BOTONES ADMIN -->
+        <div class="acciones" id="adminButtons">
+            <button class="btn btn-peligro" onclick="nuevoJuego()">
+                🔄 NUEVO JUEGO
+            </button>
+            <button class="btn btn-advertencia" onclick="editarPremio()">
+                ✏️ EDITAR PREMIO
+            </button>
+            <button class="btn btn-info" onclick="desmarcarUltimo()">
+                ↩️ DESMARCAR
+            </button>
+            <button class="btn btn-purpura" onclick="verHistorial()">
+                📋 HISTORIAL
+            </button>
+        </div>
+        
+        <!-- PESTAÑAS -->
+        <div class="pestanas">
+            <button class="tab-btn activo" onclick="mostrarPestana('tombola')">
+                🎰 TÓMBOLA
+            </button>
+            <button class="tab-btn" onclick="mostrarPestana('info')">
+                ℹ️ AYUDA
+            </button>
+        </div>
+        
+        <!-- PANEL TÓMBOLA -->
+        <div class="panel activo" id="panelTombola">
+            <h2>TÓMBOLA DE DESEMPATE</h2>
+            <div class="resultado-tombola" id="resultadoTombola">?</div>
+            <button class="btn btn-advertencia" onclick="girarTombola()" style="font-size: 18px; padding: 12px 35px;">
+                🎰 ¡GIRAR!
+            </button>
+            <div class="historial" id="historialTombola"></div>
+        </div>
+        
+        <!-- PANEL AYUDA -->
+        <div class="panel" id="panelInfo">
+            <h2>ℹ️ AYUDA RÁPIDA</h2>
+            <div style="text-align: left; max-width: 600px; margin: 15px auto; line-height: 2;">
+                <p><strong>🎯 3 FORMAS DE MARCAR:</strong></p>
+                <ol>
+                    <li>Escribe el código (ej: B5) y presiona ENTER</li>
+                    <li>Usa el teclado virtual (botón TECLADO)</li>
+                    <li>Haz clic directamente en los números</li>
+                </ol>
+                <br>
+                <p><strong>📊 RANGOS:</strong></p>
+                <ul>
+                    <li><strong>B:</strong> 1 al 15</li>
+                    <li><strong>I:</strong> 16 al 30</li>
+                    <li><strong>N:</strong> 31 al 45</li>
+                    <li><strong>G:</strong> 46 al 60</li>
+                    <li><strong>O:</strong> 61 al 75</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CONFIGURACIÓN ============
+        const RANGOS = {
+            B: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+            I: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+            N: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45],
+            G: [46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60],
+            O: [61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75]
+        };
+
+        let numerosMarcados = new Set();
+        let historialMarcados = [];
+        let modoActual = 'admin';
+        let vozActivada = true;
+        let tecladoVisible = false;
+
+        // ============ ENTRADA POR CÓDIGO ============
+        
+        // Evento para capturar ENTER en el input
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('inputCodigo');
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    marcarPorCodigo();
+                }
+            });
+            
+            // Convertir a mayúsculas automáticamente
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase();
+            });
+        });
+
+        function marcarPorCodigo() {
+            if (modoActual === 'jugador') {
+                alert('🔒 Modo jugador: No puedes marcar números.');
+                return;
+            }
+
+            const input = document.getElementById('inputCodigo');
+            const codigo = input.value.trim().toUpperCase();
+
+            if (codigo === '') {
+                alert('⚠️ Ingresa un código (ej: B5, I22, N45)');
+                input.focus();
+                return;
+            }
+
+            // Validar formato (letra + número)
+            const match = codigo.match(/^([BINGO])(\d+)$/);
+            
+            if (!match) {
+                alert('❌ Código inválido. Usa el formato: Letra+Número (ej: B5, I22, N45)');
+                input.value = '';
+                input.focus();
+                return;
+            }
+
+            const letra = match[1];
+            const numero = parseInt(match[2]);
+            const clave = `${letra}${numero}`;
+
+            // Validar letra
+            if (!RANGOS[letra]) {
+                alert('❌ Letra inválida. Usa B, I, N, G u O');
+                input.value = '';
+                input.focus();
+                return;
+            }
+
+            // Validar número
+            if (!RANGOS[letra].includes(numero)) {
+                alert(`❌ Número inválido para la letra ${letra}. Rango: ${RANGOS[letra][0]}-${RANGOS[letra][RANGOS[letra].length-1]}`);
+                input.value = '';
+                input.focus();
+                return;
+            }
+
+            // Verificar si ya está marcado
+            if (numerosMarcados.has(clave)) {
+                alert(`⚠️ ${letra}${numero} ya está marcado`);
+                input.value = '';
+                input.focus();
+                return;
+            }
+
+            // Marcar número
+            numerosMarcados.add(clave);
+            historialMarcados.push(clave);
+
+            // Actualizar grid
+            actualizarBola(letra, numero);
+            
+            // Actualizar último llamado
+            document.getElementById('ultimoLlamado').textContent = `${letra} ${numero}`;
+            
+            // Actualizar contador
+            actualizarContador();
+
+            // Dictar en voz alta
+            if (vozActivada) {
+                dictarNumero(letra, numero);
+            }
+
+            // Limpiar input y enfocar
+            input.value = '';
+            input.focus();
+
+            // Efecto visual
+            resaltarBola(letra, numero);
+        }
+
+        function actualizarBola(letra, numero) {
+            const bolas = document.querySelectorAll('.bola');
+            bolas.forEach(bola => {
+                if (bola.dataset.letra === letra && bola.dataset.numero == numero) {
+                    bola.classList.add('marcada');
+                }
+            });
+        }
+
+        function resaltarBola(letra, numero) {
+            const bolas = document.querySelectorAll('.bola');
+            bolas.forEach(bola => {
+                if (bola.dataset.letra === letra && bola.dataset.numero == numero) {
+                    bola.classList.add('resaltada');
+                    setTimeout(() => {
+                        bola.classList.remove('resaltada');
+                    }, 500);
+                }
+            });
+        }
+
+        // ============ TECLADO VIRTUAL ============
+        
+        function toggleTeclado() {
+            tecladoVisible = !tecladoVisible;
+            const teclado = document.getElementById('tecladoVirtual');
+            teclado.classList.toggle('visible', tecladoVisible);
+        }
+
+        function agregarLetra(letra) {
+            const input = document.getElementById('inputCodigo');
+            if (input.value.length === 0 || /^[BINGO]$/.test(input.value)) {
+                input.value = letra;
+            } else if (/^[BINGO]\d*$/.test(input.value)) {
+                // Ya tiene letra, marcar directamente
+                input.value = letra;
+            }
+            input.focus();
+        }
+
+        function agregarNumero(num) {
+            const input = document.getElementById('inputCodigo');
+            const valor = input.value;
+            
+            // Si empieza con letra, agregar número
+            if (/^[BINGO]$/.test(valor)) {
+                input.value = valor + num;
+            } else if (/^[BINGO]\d{1}$/.test(valor) && valor.length === 2) {
+                input.value = valor + num;
+            }
+            input.focus();
+        }
+
+        function borrarTecla() {
+            const input = document.getElementById('inputCodigo');
+            input.value = input.value.slice(0, -1);
+            input.focus();
+        }
+
+        // ============ FUNCIONES PRINCIPALES ============
+        
+        function crearGridBingo() {
+            const grid = document.getElementById('gridBingo');
+            grid.innerHTML = '';
+
+            for (const [letra, numeros] of Object.entries(RANGOS)) {
+                const columna = document.createElement('div');
+                columna.className = `columna ${letra}`;
+
+                const titulo = document.createElement('div');
+                titulo.className = 'letra-titulo';
+                titulo.textContent = letra;
+                columna.appendChild(titulo);
+
+                numeros.forEach(numero => {
+                    const bola = document.createElement('div');
+                    bola.className = 'bola';
+                    bola.textContent = numero;
+                    bola.dataset.letra = letra;
+                    bola.dataset.numero = numero;
+                    bola.dataset.clave = `${letra}${numero}`;
+
+                    if (numerosMarcados.has(`${letra}${numero}`)) {
+                        bola.classList.add('marcada');
+                    }
+
+                    if (modoActual === 'jugador') {
+                        bola.classList.add('bloqueada');
+                    }
+
+                    bola.addEventListener('click', () => {
+                        if (modoActual === 'jugador') {
+                            alert('🔒 Modo jugador: Solo puedes ver.');
+                            return;
+                        }
+                        
+                        const clave = `${letra}${numero}`;
+                        if (numerosMarcados.has(clave)) return;
+
+                        numerosMarcados.add(clave);
+                        historialMarcados.push(clave);
+                        bola.classList.add('marcada');
+                        
+                        document.getElementById('ultimoLlamado').textContent = `${letra} ${numero}`;
+                        actualizarContador();
+                        
+                        if (vozActivada) {
+                            dictarNumero(letra, numero);
+                        }
+                    });
+
+                    columna.appendChild(bola);
+                });
+
+                grid.appendChild(columna);
+            }
+            
+            actualizarContador();
+        }
+
+        function dictarNumero(letra, numero) {
+            if (!('speechSynthesis' in window)) return;
+            
+            window.speechSynthesis.cancel();
+            
+            const mensaje = new SpeechSynthesisUtterance(`${letra} ${numero}`);
+            mensaje.lang = 'es-ES';
+            mensaje.rate = 0.9;
+            mensaje.pitch = 1.1;
+            mensaje.volume = 1;
+            
+            window.speechSynthesis.speak(mensaje);
+        }
+
+        function actualizarContador() {
+            document.getElementById('numMarcados').textContent = numerosMarcados.size;
+        }
+
+        function cambiarModo(modo) {
+            modoActual = modo;
+            
+            document.getElementById('btnAdmin').classList.toggle('activo', modo === 'admin');
+            document.getElementById('btnJugador').classList.toggle('activo', modo === 'jugador');
+            
+            const adminButtons = document.getElementById('adminButtons');
+            const entradaCodigo = document.getElementById('entradaCodigo');
+            
+            adminButtons.style.display = modo === 'admin' ? 'flex' : 'none';
+            entradaCodigo.style.display = modo === 'admin' ? 'flex' : 'none';
+            
+            document.querySelectorAll('.bola').forEach(bola => {
+                bola.classList.toggle('bloqueada', modo === 'jugador');
+            });
+            
+            const banner = document.getElementById('banner');
+            banner.style.cursor = modo === 'admin' ? 'pointer' : 'default';
+            banner.onclick = modo === 'admin' ? cambiarBanner : null;
+        }
+
+        function nuevoJuego() {
+            if (modoActual === 'jugador') return;
+            
+            if (numerosMarcados.size > 0 && !confirm('¿Reiniciar juego? Se borrarán todos los números.')) return;
+            
+            numerosMarcados.clear();
+            historialMarcados = [];
+            document.getElementById('ultimoLlamado').textContent = '🎤';
+            document.getElementById('inputCodigo').value = '';
+            
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            
+            crearGridBingo();
+        }
+
+        function desmarcarUltimo() {
+            if (modoActual === 'jugador') return;
+            
+            if (historialMarcados.length === 0) {
+                alert('No hay números para desmarcar.');
+                return;
+            }
+            
+            const ultimoClave = historialMarcados.pop();
+            numerosMarcados.delete(ultimoClave);
+            
+            document.querySelectorAll('.bola').forEach(bola => {
+                if (bola.dataset.clave === ultimoClave) {
+                    bola.classList.remove('marcada');
+                }
+            });
+            
+            if (historialMarcados.length > 0) {
+                const anterior = historialMarcados[historialMarcados.length - 1];
+                const match = anterior.match(/([A-Z])(\d+)/);
+                document.getElementById('ultimoLlamado').textContent = `${match[1]} ${match[2]}`;
+            } else {
+                document.getElementById('ultimoLlamado').textContent = '🎤';
+            }
+            
+            actualizarContador();
+        }
+
+        function verHistorial() {
+            if (historialMarcados.length === 0) {
+                alert('No hay números marcados aún.');
+                return;
+            }
+            
+            const ultimos = historialMarcados.slice(-20).reverse();
+            let mensaje = 'ÚLTIMOS 20 NÚMEROS MARCADOS:\n\n';
+            ultimos.forEach((clave, i) => {
+                const match = clave.match(/([A-Z])(\d+)/);
+                mensaje += `${i + 1}. ${match[1]} ${match[2]}\n`;
+            });
+            
+            alert(mensaje);
+        }
+
+        function cambiarBanner() {
+            if (modoActual === 'jugador') return;
+            
+            const mensajes = [
+                '🎯 ¡Atención! Escuchen bien 🎯',
+                '🌟 ¡Mucha suerte! 🌟',
+                '🎪 ¡El bingo está que arde! 🎪',
+                '💫 Concéntrate en tu cartón 💫',
+                '🎉 ¡Que gane el mejor! 🎉',
+                '🔔 Silencio en la sala 🔔',
+                '🍀 ¡La suerte está echada! 🍀'
+            ];
+            
+            const banner = document.getElementById('banner');
+            const actual = banner.textContent.trim();
+            const indice = mensajes.indexOf(actual);
+            
+            if (indice === -1 || indice === mensajes.length - 1) {
+                const personalizado = prompt('✏️ Mensaje personalizado:', '');
+                if (personalizado && personalizado.trim()) {
+                    banner.textContent = personalizado.trim();
+                }
+            } else {
+                banner.textContent = mensajes[indice + 1];
+            }
+        }
+
+        function editarPremio() {
+            if (modoActual === 'jugador') return;
+            
+            const actual = document.getElementById('premio').textContent.replace('🎁 ', '').replace(' 🎁', '');
+            const nuevo = prompt('🎁 Premio:', actual);
+            if (nuevo && nuevo.trim()) {
+                document.getElementById('premio').textContent = `🎁 ${nuevo.trim()} 🎁`;
+            }
+        }
+
+        function toggleVoz() {
+            vozActivada = !vozActivada;
+            const control = document.getElementById('controlVoz');
+            
+            if (vozActivada) {
+                control.textContent = '🔊 Voz ON';
+                control.style.background = '#ecf0f1';
+            } else {
+                control.textContent = '🔇 Voz OFF';
+                control.style.background = '#fadbd8';
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+            }
+        }
+
+        function girarTombola() {
+            const num = Math.floor(Math.random() * 75) + 1;
+            let letra;
+            if (num <= 15) letra = 'B';
+            else if (num <= 30) letra = 'I';
+            else if (num <= 45) letra = 'N';
+            else if (num <= 60) letra = 'G';
+            else letra = 'O';
+            
+            const resultado = `${letra} ${num}`;
+            document.getElementById('resultadoTombola').textContent = resultado;
+            
+            const historial = document.getElementById('historialTombola');
+            const badge = document.createElement('span');
+            badge.className = 'badge-tombola';
+            badge.textContent = resultado;
+            historial.appendChild(badge);
+            
+            if (historial.children.length > 10) {
+                historial.removeChild(historial.firstChild);
+            }
+            
+            if (vozActivada) {
+                dictarNumero(letra, num);
+            }
+        }
+
+        function mostrarPestana(pestana) {
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('activo', (pestana === 'tombola' && i === 0) || (pestana === 'info' && i === 1));
+            });
+            
+            document.getElementById('panelTombola').classList.toggle('activo', pestana === 'tombola');
+            document.getElementById('panelInfo').classList.toggle('activo', pestana === 'info');
+        }
+
+        // Reloj
+        function actualizarReloj() {
+            document.getElementById('reloj').textContent = 
+                new Date().toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        }
+
+        // Iniciar
+        crearGridBingo();
+        cambiarModo('admin');
+        setInterval(actualizarReloj, 1000);
+        actualizarReloj();
+        
+        // Enfocar input al cargar
+        document.getElementById('inputCodigo').focus();
+        
+        console.log('✅ Bingo Mágico listo');
+        console.log('🎯 3 formas de marcar: Código, Teclado o Click');
+        console.log('📊 Rangos: B:1-15, I:16-30, N:31-45, G:46-60, O:61-75');
+    </script>
+</body>
+</html>
